@@ -119,7 +119,7 @@ for solver in (solver11, solver12, solver13)
 
     print(""); println("Number iterations to convergence: $num_iter")
     println("Final maximum error: $final_err")
-    iter += 1
+    global iter += 1
 end
 
 ## Output results

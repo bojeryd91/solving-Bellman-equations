@@ -1,9 +1,5 @@
-function f(a_in)
-    a_in = a_in + 1.0
+iter = 1; print("")
+for solver in (1, 2, 3)
+    println("Iter is $iter:")
+    global iter += 1
 end
-
-a = 2.0
-print(""); println(a)
-f(a)
-
-println(a)
