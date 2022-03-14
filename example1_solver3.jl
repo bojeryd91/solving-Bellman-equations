@@ -3,7 +3,7 @@ using Plots, Interpolations, Optim
 
 ## Define economic parameters
 const β = 0.95
-const r = 1.0/β - 1.0
+const r = 1.0/β - 1.0 - 0.01
 const y = 1.0
 const c_min = 0.0001
 u(c) = c >= c_min ? log(c) : -1.0e8

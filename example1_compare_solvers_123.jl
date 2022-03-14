@@ -3,7 +3,7 @@ using Plots, Interpolations, Optim
 
 ## Define economic parameters
 const β = 0.95
-const r = 1.0/β - 1.0
+const r = 1.0/β - 1.0 - 0.01
 const y = 1.0
 const c_min = 0.0001
 u(c) = c >= c_min ? log(c) : -1.0e8
@@ -31,7 +31,7 @@ function solver11(V_guess)
             # Identify the maximum and maximizer
             (maxim, index_maximizer) = findmax(Bellman_rhs)
             new_V[i_x]  = maxim
-            optimal_x′ = X[index_maximizer] # Optimal decision for tomorrow's cash-on-hand
+            optimal_x′ = X[index_maximizer]
             optimal_c[i_x] = x - (optimal_x′ - y)/(1+r)
         end
         # Prepare for next iteration
