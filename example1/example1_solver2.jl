@@ -15,7 +15,7 @@ const N_C = 800
 ## Initialize vectors
 const X = range(1.0, 4.0, length=N_X)
 const C = range(0.0, maximum(X), length=N_C)
-curr_V  = ones(N_X); new_V = copy(curr_V)
+curr_V  = ones(N_X)
 optimal_c = zeros(N_X) # Why N_X?
 
 ## The solver
@@ -24,15 +24,18 @@ while iter < iter_max && err > err_tol
     # Create an interpolation object V_interp
     V_temp = LinearInterpolation(X, curr_V, extrapolation_bc=Flat())
     V_interp(x_tp1) = x_tp1 >= y ? V_temp(x_tp1) : -1.0e8
+
+    new_V = copy(curr_V)
     for (i_x, x) in enumerate(X)
-        # For a particular x, compute the right-hand-side of the
-        #   Bellman equation for each possible choice c ∈ C.
-        Bellman_rhs = u.(C) .+ β.*V_interp.((x .- C).*(1.0+r) .+ y)
+        # For a particular x, compute the return function on
+        #   right-hand-side of the Bellman equation for each
+        #   possible choice c ∈ C.
+        R = u.(C) .+ β.*V_interp.((x .- C).*(1.0+r) .+ y)
 
         # Identify the maximum and maximizer
-        (maxim, index_maximizer) = findmax(Bellman_rhs)
+        (maxim, index_maximizer) = findmax(R)
         new_V[i_x] = maxim
-        global optimal_c[i_x] = C[index_maximizer]
+        optimal_c[i_x] = C[index_maximizer]
     end
     # Prepare for next iteration
     global err  = maximum(abs.(new_V .- curr_V))

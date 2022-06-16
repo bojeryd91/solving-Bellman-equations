@@ -11,7 +11,7 @@ u(c) = c >= c_min ? log(c) : -1.0e8
 ## Define solver parameters and initialize vectors
 const N_X = 100
 const X   = range(1.0, 4.0, length=N_X)
-curr_V    =  ones(N_X); new_V = copy(curr_V)
+curr_V    =  ones(N_X)
 optimal_c = zeros(N_X)
 
 ## The solver
@@ -21,22 +21,24 @@ while iter < iter_max && err > err_tol
     V_temp = LinearInterpolation(X, curr_V, extrapolation_bc=
                                                 Interpolations.Flat())
     V_interp(x_tp1) = x_tp1 >= y ? V_temp(x_tp1) : -1.0e8
+
+    new_V = copy(curr_V)
     for (i_x, x) in enumerate(X)
         # Create the function to minimize
-        Bellman_rhs(c) = u(c) + β*V_interp((x - c)*(1.0+r) + y)
+        R(c) = u(c) + β*V_interp((x - c)*(1.0+r) + y)
 
         # For a particular x, optimize the whole right-hand-side expression
-        #   of the Bellman equation w.r.t. c
-        result = optimize(c -> -Bellman_rhs(c), c_min, x)
+        #   of the return function R w.r.t. c
+        result = optimize(c -> -R(c), c_min, x)
 
         # Identify the maximum and maximizer
-        new_V[i_x] = -result.minimum
-        global optimal_c[i_x] = result.minimizer
+        new_V[i_x]     = -result.minimum
+        optimal_c[i_x] =  result.minimizer
     end
     # Prepare for next iteration
-    global err  = maximum(abs.(new_V .- curr_V))
+    global err    = maximum(abs.(new_V .- curr_V))
     global curr_V = copy(new_V)
-    global iter += 1
+    global iter  += 1
 end
 
 ## Output results
